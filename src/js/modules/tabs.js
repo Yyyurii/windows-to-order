@@ -1,6 +1,6 @@
 const tabs = () => {
 
-  const bindModal = (tabHeaderSelector, tabSelector, tabContantSelector, activeClass) => {
+  const bindTab = (tabHeaderSelector, tabSelector, tabContantSelector, activeClass, display = 'block') => {
 
     const tabHeader = document.querySelector(tabHeaderSelector);
     const tab = document.querySelectorAll(tabSelector);
@@ -13,11 +13,11 @@ const tabs = () => {
 
       tab.forEach(item => {
         item.classList.remove(activeClass);
-    });
+      });
     }
 
     const showContent = (i = 0) => {
-      tabContant[i].style.display = 'block';
+      tabContant[i].style.display = display;
       tab[i].classList.add(activeClass);
     }
 
@@ -40,8 +40,9 @@ const tabs = () => {
     showContent();
   }
 
-  bindModal('.glazing_slider', '.glazing_block', '.glazing_content', 'active');
-  bindModal('.decoration_slider ', '.no_click', '.decoration_content > div > div', 'after_click');
+  bindTab('.glazing_slider ', '.glazing_block', '.glazing_content', 'active');
+  bindTab('.decoration_slider', '.no_click', '.decoration_content > div > div', 'after_click');
+  bindTab('.balcon_icons', '.balcon_icons_img', '.big_img > img', 'do_image_more', 'inline-block');
 
 };
 

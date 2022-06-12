@@ -1,60 +1,62 @@
-const forms = () => {
-  const form = document.querySelectorAll('form'),
-        inputs = document.querySelectorAll('input'),
-        phoneInputs = document.querySelectorAll('input[name="user_phone"]');
+import checkNumInputs from './checkNumInputs';
 
-  phoneInputs.forEach(item => {
-      item.addEventListener('input', () => {
-          item.value = item.value.replace(/\D/, '');
-      });
-  });
-  
-  const message = {
-      loading: 'Загрузка...',
-      success: 'Спасибо! Скоро мы с вами свяжемся',
-      failure: 'Что-то пошло не так...'
-  };
+const forms = (state) => {
+    const form = document.querySelectorAll('form'),
+          inputs = document.querySelectorAll('input');
 
-  const postData = async (url, data) => {
-      document.querySelector('.status').textContent = message.loading;
-      let res = await fetch(url, {
-          method: "POST",
-          body: data
-      });
+    checkNumInputs('input[name="user_phone"]');
+    
+    const message = {
+        loading: 'Загрузка...',
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
 
-      return await res.text();
-  };
+    const postData = async (url, data) => {
+        document.querySelector('.status').textContent = message.loading;
+        let res = await fetch(url, {
+            method: "POST",
+            body: data
+        });
 
-  const clearInputs = () => {
-      inputs.forEach(item => {
-          item.value = '';
-      });
-  };
+        return await res.text();
+    };
 
-  form.forEach(item => {
-      item.addEventListener('submit', (e) => {
-          e.preventDefault();
+    const clearInputs = () => {
+        inputs.forEach(item => {
+            item.value = '';
+        });
+    };
 
-          let statusMessage = document.createElement('div');
-          statusMessage.classList.add('status');
-          item.appendChild(statusMessage);
+    form.forEach(item => {
+        item.addEventListener('submit', (e) => {
+            e.preventDefault();
 
-          const formData = new FormData(item);
+            let statusMessage = document.createElement('div');
+            statusMessage.classList.add('status');
+            item.appendChild(statusMessage);
 
-          postData('assets/server.php', formData)
-              .then(res => {
-                  console.log(res);
-                  statusMessage.textContent = message.success;
-              })
-              .catch(() => statusMessage.textContent = message.failure)
-              .finally(() => {
-                  clearInputs();
-                  setTimeout(() => {
-                      statusMessage.remove();
-                  }, 5000);
-              });
-      });
-  });
+            const formData = new FormData(item);
+            if (item.getAttribute('data-calc') === "end") {
+                for (let key in state) {
+                    formData.append(key, state[key]);
+                }
+            }
+
+            postData('assets/server.php', formData)
+                .then(res => {
+                    console.log(res);
+                    statusMessage.textContent = message.success;
+                })
+                .catch(() => statusMessage.textContent = message.failure)
+                .finally(() => {
+                    clearInputs();
+                    setTimeout(() => {
+                        statusMessage.remove();
+                    }, 5000);
+                });
+        });
+    });
 };
 
 export default forms;
